@@ -87,9 +87,4 @@ gulp.task( 'watch', async () => {
   gulp.watch( './docs/src/sass/**/*.scss', gulp.series( 'docs-sass' ) );
 });
 
-// gulp.task('default', function(done){
-//   (gulp.series('scripts', 'docs-scripts', 'sass', 'docs-sass', 'watch')());
-//   done();
-// });
-
 gulp.task('default', gulp.series('scripts', 'docs-scripts', 'sass', 'docs-sass', 'watch'));
