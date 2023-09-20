@@ -3,12 +3,10 @@ var gulp = require( 'gulp' ),
   plumber = require( 'gulp-plumber' ),
   autoprefixer = require('gulp-autoprefixer'),
   watch = require( 'gulp-watch' ),
-  minifycss = require( 'gulp-minify-css' ),
   jshint = require( 'gulp-jshint' ),
   stylish = require( 'jshint-stylish' ),
   uglify = require( 'gulp-uglify' ),
   rename = require( 'gulp-rename' ),
-  notify = require( 'gulp-notify' ),
   include = require( 'gulp-include' ),
   sass = require( 'gulp-sass' )(require('sass'));
 
@@ -21,15 +19,25 @@ var onError = function( err ) {
 // var sass = require('gulp-sass')(require('sass'));
 // Concatenates all files that it finds in scripts.js nd creates one minified version.  It is dependent on the jshint task to succeed.
 gulp.task( 'scripts', async () => {
-  return gulp.src( './src/js/scripts.js' )
+  return gulp.src( './app/src/js/scripts.js' )
     .pipe( include() )
     .pipe( jshint() )
     .pipe( jshint.reporter( stylish ) )
     .pipe( uglify() )
     .pipe( rename( { suffix: '.min' } ) )
-    .pipe( gulp.dest( './assets/js' ) )
-    .pipe( notify( { message: 'scripts task complete' } ) );
-} );
+    .pipe( gulp.dest( './app/assets/js' ) );
+});
+
+// docs scripts
+gulp.task( 'docs-scripts', async () => {
+  return gulp.src( './docs/src/js/docs.js' )
+    .pipe( include() )
+    .pipe( jshint() )
+    .pipe( jshint.reporter( stylish ) )
+    .pipe( uglify() )
+    .pipe( rename( { suffix: '.min' } ) )
+    .pipe( gulp.dest( './docs/assets/js' ) );
+});
 
 //sass options
 var options = {};
@@ -41,7 +49,12 @@ options.sass = {
 
 // Sass-min - Release build minifies CSS after compiling Sass
 const cssSourcePath = [
-  './src/sass/styles.scss'
+  './app/src/sass/styles.scss'
+];
+
+// docs sass path
+const docsCssSourcePath = [
+  './docs/src/sass/docs.scss'
 ];
 
 gulp.task('sass', async () => {
@@ -50,27 +63,33 @@ gulp.task('sass', async () => {
     .pipe(sass(options.sass))
     .pipe(autoprefixer('last 2 versions'))
     .pipe( rename( { suffix: '.min' } ) )
-    .pipe(gulp.dest('./assets/css/'))
-    .pipe(notify({ title: 'Sass', message: 'sass-min task complete' }));
+    .pipe(gulp.dest('./app/assets/css/'));
 });
 
-// Start the livereload server and watch files for change
-gulp.task( 'watch', async () => {
-  gulp.watch( [ './src/js/**/*.js', '!./assets/js/*.js' ], gulp.series( 'scripts' ) )
-  gulp.watch( './src/sass/**/*.scss', gulp.series( 'sass' ) );
-} );
+gulp.task('docs-sass', async () => {
+  return gulp.src(docsCssSourcePath)
+    .pipe(plumber())
+    .pipe(sass(options.sass))
+    .pipe(autoprefixer('last 2 versions'))
+    .pipe( rename( { suffix: '.min' } ) )
+    .pipe(gulp.dest('./docs/assets/css/'));
+});
 
-// Start the livereload server and watch files for change
-// gulp.task( 'build', function(){
-//   gulp.run('scripts');
+// Start the livereload server and watch files for changes
+gulp.task( 'watch', async () => {
+
+  // watch app files
+  gulp.watch( [ './app/src/js/**/*.js', '!./app/assets/js/*.js' ], gulp.series( 'scripts' ) )
+  gulp.watch( './app/src/sass/**/*.scss', gulp.series( 'sass' ) );
+
+  // watch docs files
+  gulp.watch( [ './docs/src/js/**/*.js', '!./docs/assets/js/*.js' ], gulp.series( 'docs-scripts' ) )
+  gulp.watch( './docs/src/sass/**/*.scss', gulp.series( 'docs-sass' ) );
+});
+
+// gulp.task('default', function(done){
+//   (gulp.series('scripts', 'docs-scripts', 'sass', 'docs-sass', 'watch')());
+//   done();
 // });
 
-//gulp.task('default', ['build', 'watch']);
-gulp.task('default', function(done){
-  (gulp.series('scripts', 'sass')());
-
-  gulp.watch( [ './src/js/**/*.js', '!./assets/js/*.js' ], gulp.series( 'scripts' ) )
-  gulp.watch( './src/sass/**/*.scss', gulp.series( 'sass' ) );
-
-  done();
-});
+gulp.task('default', gulp.series('scripts', 'docs-scripts', 'sass', 'docs-sass', 'watch'));
