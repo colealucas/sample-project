@@ -16,4 +16,4 @@ Version: 1.0.0
 First run `npm i` to install all the dependencies, then run `gulp` and you are good to go.
 
 ## Credits
-(c) - 2023. Weblucas is the author of this boilerplate.
+(c) - 2023 Weblucas is the author of this boilerplate.
