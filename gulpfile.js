@@ -19,13 +19,13 @@ var onError = function( err ) {
 // var sass = require('gulp-sass')(require('sass'));
 // Concatenates all files that it finds in scripts.js nd creates one minified version.  It is dependent on the jshint task to succeed.
 gulp.task( 'scripts', async () => {
-  return gulp.src( './app/src/js/scripts.js' )
+  return gulp.src( './src/js/scripts.js' )
     .pipe( include() )
     .pipe( jshint() )
     .pipe( jshint.reporter( stylish ) )
     .pipe( uglify() )
     .pipe( rename( { suffix: '.min' } ) )
-    .pipe( gulp.dest( './app/assets/js' ) );
+    .pipe( gulp.dest( './assets/js' ) );
 });
 
 // docs scripts
@@ -49,7 +49,7 @@ options.sass = {
 
 // Sass-min - Release build minifies CSS after compiling Sass
 const cssSourcePath = [
-  './app/src/sass/styles.scss'
+  './src/sass/styles.scss'
 ];
 
 // docs sass path
@@ -63,7 +63,7 @@ gulp.task('sass', async () => {
     .pipe(sass(options.sass))
     .pipe(autoprefixer('last 2 versions'))
     .pipe( rename( { suffix: '.min' } ) )
-    .pipe(gulp.dest('./app/assets/css/'));
+    .pipe(gulp.dest('./assets/css/'));
 });
 
 gulp.task('docs-sass', async () => {
@@ -79,8 +79,8 @@ gulp.task('docs-sass', async () => {
 gulp.task( 'watch', async () => {
 
   // watch app files
-  gulp.watch( [ './app/src/js/**/*.js', '!./app/assets/js/*.js' ], gulp.series( 'scripts' ) )
-  gulp.watch( './app/src/sass/**/*.scss', gulp.series( 'sass' ) );
+  gulp.watch( [ './src/js/**/*.js', '!./assets/js/*.js' ], gulp.series( 'scripts' ) )
+  gulp.watch( './src/sass/**/*.scss', gulp.series( 'sass' ) );
 
   // watch docs files
   gulp.watch( [ './docs/src/js/**/*.js', '!./docs/assets/js/*.js' ], gulp.series( 'docs-scripts' ) )
