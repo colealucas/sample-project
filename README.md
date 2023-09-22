@@ -1,4 +1,4 @@
-# Web Lucas Sample Project 1
+# Web Lucas Sample Project
 This is a sample project to be used as boilerplate for new digital assets for CodeCanyon.
 
 ```
